@@ -1,13 +1,17 @@
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
-var request = require('request');
+var sdk = require('lc-sdk-node.js');
 
 // Define some default values if not set in environment
 var PORT = process.env.PORT || 3000;
 var SHUTDOWN_TIMEOUT = process.env.SHUTDOWN_TIMEOUT || 10000;
 var SERVICE_CHECK_HTTP = process.env.SERVICE_CHECK_HTTP || '/healthcheck';
-var ORDER_NOTIFICATION_SERVICE_URL = process.env.ORDER_NOTIFICATION_SERVICE_URL || 'http://localhost:3000/test/notification/order';
+var client = sdk({ discoveryServers: [
+       '46.101.245.190:8500',
+       '46.101.132.55:8500',
+       '46.101.193.82:8500'
+]});
 
 // Create a new express app
 var app = express();
@@ -33,21 +37,18 @@ app.get('/orders', function (req, res) {
 app.post('/orders', function (req, res) {
 	var order = req.body;
 
-  orders.push(order);
-  request(
-    {
-      url: ORDER_NOTIFICATION_SERVICE_URL,
-      method: 'POST',
-      json: order
-  }, function (error, response, body) {
-		if (error) {
-			console.log('ERROR: Somethin went wrong!');
-			console.log(body);
-		}
-		if (!error && response.statusCode == 200) {
-			console.log(body); // Show the HTML for the Google homepage. 
-		}
-	});
+	orders.push(order);
+
+	var handleSuccess = function(result) {
+		console.log("SUCCESS!");
+	};
+
+	var problem = function(error) {
+		console.log("UHOHH");
+	};
+
+  client.post('order-notification-service', '/notification/order', order).then(handleSuccess).catch(problem);
+
   res.status(201).location('/orders/' + (orders.length - 1)).end();
 });
 
