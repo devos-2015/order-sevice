@@ -58,11 +58,6 @@ app.get('/orders/:id', function (req, res) {
   res.send(JSON.stringify(orders[req.params.id]));
 });
 
-app.post('/test/notification/order', function (req, res) {
-	console.log('SUCCESS');
-  	res.status(201).location('test_succesful').end();
-});
-
 // Start the server
 var server = app.listen(PORT);
 
