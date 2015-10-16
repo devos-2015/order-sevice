@@ -13,6 +13,24 @@ var client = sdk({ discoveryServers: [
        '46.101.193.82:8500'
 ]});
 
+
+var serviceRoutes = [
+	{ 
+		"Action": "INDEX",
+		"Method": "GET",
+		"OrdersCollection": "/orders"
+	},
+	{ 
+		"Action": "CREATE",
+		"Method": "POST",
+		"OrdersCollection": "/orders"
+	},
+	{ 
+		"Action": "SHOW",
+		"Method": "GET",
+		"OrdersEntity": "/orders/:id"
+	}];
+
 // Create a new express app
 var app = express();
 
@@ -23,7 +41,12 @@ app.use(cors());
 
 // Add health check endpoint
 app.get(SERVICE_CHECK_HTTP, function (req, res) {
-  res.send({ message: 'OK' });
+  res.send({ message: 'OK', routes: serviceRoutes });
+});
+
+app.get('/', function (req, res) {
+  res.contentType('application/json');
+  res.send(JSON.stringify(serviceRoutes));
 });
 
 var orders = [];
