@@ -22,19 +22,22 @@ app.get(SERVICE_CHECK_HTTP, function (req, res) {
 
 var orders = [];
 
+// Collection resource
 app.get('/orders', function (req, res) {
-  res.send(orders);
-});
-
-app.get('/orders/:id', function (req, res) {
-  res.send(orders[req.params.id]);
+  res.contentType('application/json');
+  res.send(JSON.stringify(orders));
 });
 
 app.post('/orders', function (req, res) {
-  orders.push(req.body.toString());
+  orders.push(req.body);
   res.status(201).location('/orders/' + (orders.length - 1)).end();
 });
 
+// Entity resource 
+app.get('/orders/:id', function (req, res) {
+  res.contentType('application/json');
+  res.send(JSON.stringify(orders[req.params.id]));
+});
 
 // Start the server
 var server = app.listen(PORT);
