@@ -5,7 +5,7 @@ Order service interface definition is as folows:
 		{
 			"ContactData": {
 				"Name": "John Doe",
-				"Email": "john.doe@example.com",
+				"Email": "john.doe@example.com"
 			},
 			"Cart": {
 				"Products": [
