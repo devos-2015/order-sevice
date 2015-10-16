@@ -21,7 +21,7 @@
     "body-parser": "^1.14.1",
     "cors": "~2.7.1",
     "express": "~4.13.3",
-    "lc-sdk-node.js": "0.0.2",
+    "lc-sdk-node.js": "0.0.2"
   },
   "devDependencies": {
     "gulp": "~3.9.0",
