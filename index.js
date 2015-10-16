@@ -1,11 +1,13 @@
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
+var request = require('request');
 
 // Define some default values if not set in environment
 var PORT = process.env.PORT || 3000;
 var SHUTDOWN_TIMEOUT = process.env.SHUTDOWN_TIMEOUT || 10000;
 var SERVICE_CHECK_HTTP = process.env.SERVICE_CHECK_HTTP || '/healthcheck';
+var ORDER_NOTIFICATION_SERVICE_URL = process.env.ORDER_NOTIFICATION_SERVICE_URL || 'http://localhost:3000/test/notification/order';
 
 // Create a new express app
 var app = express();
@@ -29,7 +31,23 @@ app.get('/orders', function (req, res) {
 });
 
 app.post('/orders', function (req, res) {
-  orders.push(req.body);
+	var order = req.body;
+
+  orders.push(order);
+  request(
+    {
+      url: ORDER_NOTIFICATION_SERVICE_URL,
+      method: 'POST',
+      json: order
+  }, function (error, response, body) {
+		if (error) {
+			console.log('ERROR: Somethin went wrong!');
+			console.log(body);
+		}
+		if (!error && response.statusCode == 200) {
+			console.log(body); // Show the HTML for the Google homepage. 
+		}
+	});
   res.status(201).location('/orders/' + (orders.length - 1)).end();
 });
 
@@ -37,6 +55,11 @@ app.post('/orders', function (req, res) {
 app.get('/orders/:id', function (req, res) {
   res.contentType('application/json');
   res.send(JSON.stringify(orders[req.params.id]));
+});
+
+app.post('/test/notification/order', function (req, res) {
+	console.log('SUCCESS');
+  	res.status(201).location('test_succesful').end();
 });
 
 // Start the server
